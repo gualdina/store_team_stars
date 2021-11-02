@@ -11,7 +11,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
         //This class is used for creating the documentation
-        //http://localhost:8080/swagger-ui/
+        //http://localhost:8082/swagger-ui/
         @Bean
         public Docket api() {
             return new Docket(DocumentationType.SWAGGER_2)

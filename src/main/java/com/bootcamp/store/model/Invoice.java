@@ -25,16 +25,28 @@ public class Invoice {
     @ManyToOne
     @JoinColumn(name="invoice_id")
     private User invoiceWithUser = new User();
-    @ManyToMany(mappedBy = "productsOnInvoices")
-    List<Product> invoiceWithProducts = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "invoiceWithProducts",
+            joinColumns = @JoinColumn(name= "invoice_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"))
+    private List<Product> invoiceWithProducts = new ArrayList<>();
 
     @JsonIgnore
-    public InvoiceResponse invoiceResponse() {
-        return new InvoiceResponse(
-               this.getId(),
-               this.getNumber(),
-               this.getTotal(),
-                this.getInvoiceWithUser(),
-                this.invoiceResponse().getProductResponses());
+    public InvoiceResponse invoiceResponses() {
+            List<ProductResponse> productResponseArrayList = new ArrayList<>();
+            if(!invoiceWithProducts.isEmpty()){
+                for(Product product : invoiceWithProducts){
+                    productResponseArrayList.add(product.productResponses());
+                }
+            }
+            return new InvoiceResponse(
+                    this.id,
+                    this.number,
+                    this.total,
+                    this.invoiceResponses().getUserId(),
+                    productResponseArrayList
+            );
     }
 }

@@ -1,5 +1,6 @@
 package com.bootcamp.store.controller.request;
 
+
 import com.bootcamp.store.model.Invoice;
 import com.bootcamp.store.model.Product;
 import com.bootcamp.store.model.User;
@@ -16,16 +17,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class InvoiceRequest {
+public class CreateInvoiceRequest {
+    private Long userId;
     private int number;
-    private double total;
+    private List<Long> productIdList;
 
     @JsonIgnore
-    public Invoice invoiceBuilder(List<Product> products){
-        return Invoice.builder()
-                .number(this.getNumber())
-                .total(this.getTotal())
+    public Invoice createInvoice(double total, int number, User user, List<Product> products){
+        return Invoice
+                .builder()
+                .total(total)
+                .number(number)
+                .invoiceWithUser(user)
                 .invoiceWithProducts(products)
                 .build();
     }
+
 }
