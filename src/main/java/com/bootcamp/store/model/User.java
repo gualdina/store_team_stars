@@ -25,7 +25,7 @@ public class User {
     private String password;
     private boolean active;
     private String roles;
-    @OneToMany(mappedBy = "invoiceWithUser")
+    @OneToMany( cascade = CascadeType.ALL )
     private List<Invoice> invoices = new ArrayList<>();
 
     @JsonIgnore
@@ -33,14 +33,7 @@ public class User {
         List<InvoiceResponse> invoiceResponses = new ArrayList<>();
         if(this.invoices!=null && !this.invoices.isEmpty()){
             for(Invoice invoice : this.invoices) {
-                invoiceResponses.add(new InvoiceResponse(
-                        invoice.getId(),
-                        invoice.getNumber(),
-                        invoice.getTotal(),
-                        invoice.getInvoiceWithUser(),
-                        invoice.invoiceResponse().getProductResponses()
-                ));
-
+                invoiceResponses.add(invoice.invoiceResponses());
             }
         }
         return new UserResponse(

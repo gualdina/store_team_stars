@@ -11,6 +11,7 @@ import com.bootcamp.store.repository.ProductRepository;
 import com.bootcamp.store.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,9 +41,28 @@ public class InvoiceService {
         return userRepository.findById(id).orElseThrow(UserNotFound::new);
     }
     //create invoice
-    public Invoice createInvoice(Invoice invoice){
+    public Invoice createInvoice(Long userId, List<Long> productIdList){
+    List<Product> products = new ArrayList<>();
+    double total = 0.0;
+        for (Long productId : productIdList){
+            Product product = this.getProductById(productId);
+            products.add(product);
+            total += product.getValue();
+        }
+        User user = this.getUserById(userId);
+
+        Invoice invoice = invoiceRepository.save(Invoice
+                .builder()
+                .total(total)
+                .invoiceWithUser(user)
+                .invoiceWithProducts(products)
+                .build());
+        user.getInvoices().add(invoice);
         return invoiceRepository.save(invoice);
     }
+
+
+
     //add invoice to User
     public Invoice addInvoiceToUser(Long userId, Long invoiceId){
         Invoice invoice = this.getInvoiceById(invoiceId);

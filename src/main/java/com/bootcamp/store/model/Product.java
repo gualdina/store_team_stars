@@ -22,20 +22,15 @@ public class Product {
     private String name;
     private double value;
 
-    @ManyToMany
-    @JoinTable(
-            name = "product_invoice",
-            joinColumns = @JoinColumn(name= "product_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "invoice_id", referencedColumnName = "id"))
-    List<Invoice> productsOnInvoices = new ArrayList<>();
+    @ManyToMany(mappedBy = "invoiceWithProducts", cascade = CascadeType.ALL)
+   private List<Invoice> productsOnInvoices;
 
     @JsonIgnore
-    public ProductResponse productResponse(){
+    public ProductResponse productResponses(){
         return new ProductResponse(
                 this.getId(),
                 this.getName(),
-                this.getValue(),
-                this.productResponse().getInvoiceResponseList());
+                this.getValue());
     }
 }
 
