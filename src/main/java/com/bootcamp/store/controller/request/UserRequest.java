@@ -38,5 +38,8 @@ public class UserRequest {
                 .userName(this.getUserName())
                 .age(this.getAge())
                 .password(this.getPassword())
+                .active(this.isActive())
+                .roles(this.getRoles())
+                .build();
     }
 }

@@ -1,5 +1,7 @@
 package com.bootcamp.store.model;
 
+import com.bootcamp.store.controller.response.ProductResponse;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,5 +28,14 @@ public class Product {
             joinColumns = @JoinColumn(name= "product_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "invoice_id", referencedColumnName = "id"))
     List<Invoice> productsOnInvoices = new ArrayList<>();
+
+    @JsonIgnore
+    public ProductResponse productResponse(){
+        return new ProductResponse(
+                this.getId(),
+                this.getName(),
+                this.getValue(),
+                this.productResponse().getInvoiceResponseList());
+    }
 }
 

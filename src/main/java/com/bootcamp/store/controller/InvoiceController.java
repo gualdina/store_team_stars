@@ -2,16 +2,12 @@ package com.bootcamp.store.controller;
 
 import com.bootcamp.store.controller.request.InvoiceRequest;
 import com.bootcamp.store.controller.response.InvoiceResponse;
-import com.bootcamp.store.controller.response.UserResponse;
 import com.bootcamp.store.model.Invoice;
-import com.bootcamp.store.model.User;
 import com.bootcamp.store.service.InvoiceService;
+import com.bootcamp.store.service.ProductService;
 import com.bootcamp.store.service.UserService;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,57 +16,55 @@ import java.util.List;
 @RequestMapping("/api")
 @Validated
 public class InvoiceController {
-    private  InvoiceService invoiceService;
-    private UserService userService;
-    public InvoiceController(InvoiceService invoiceService, UserService userService) {
+    private final InvoiceService invoiceService;
+    private final UserService userService;
+    private final ProductService productService;
+
+    public InvoiceController(InvoiceService invoiceService, UserService userService, ProductService productService) {
         this.invoiceService = invoiceService;
         this.userService = userService;
+        this.productService = productService;
     }
-    //get all invoices
-   @GetMapping("/Invoices")
-   public List<InvoiceResponse> getAllInvoice(){
-        List<Invoice> invoiceList = invoiceService.getAllInvoices();
-        List<InvoiceResponse> invoiceResponseList = new ArrayList<>();
-        for( Invoice invoice : invoiceList) {
-            final InvoiceResponse invoiceResponse = new InvoiceResponse(
-            invoice.getId(),
-            invoice.getNumber(),
-            invoice.getTotal(),
-            invoice.getInvoiceWithUser(),
-            invoice.getInvoiceWithProducts());
-            invoiceResponseList.add(invoiceResponse);
-        }
-        return invoiceResponseList;
+
+    public List<InvoiceResponse> invoiceResponses(List<Invoice> invoices){
+        List<InvoiceResponse> invoiceResponses = new ArrayList<>();
+        for(Invoice invoice : invoices){invoiceResponses.add(invoice.invoiceResponse()); }
+        return invoiceResponses;
+    }
+   //get all invoices
+   @GetMapping("/invoices")
+   public List<InvoiceResponse> getAllInvoices(){
+       return this.invoiceResponses(invoiceService.getAllInvoices());
    }
-    //find by id
-    @GetMapping("/invoices/{id]")
-    public InvoiceResponse getInvoiceById(Long id) {
-        Invoice invoice = invoiceService.getInvoiceById(id);
-        return new InvoiceResponse(
-                invoice.getId(),
-                invoice.getNumber(),
-                invoice.getTotal(),
-                invoice.getInvoiceWithUser(),
-                invoice.getInvoiceWithProducts());
+  //find by id
+   @GetMapping("/invoice/{id}")
+    public InvoiceResponse getInvoiceById(@PathVariable(value = "id") Long id){
+        return invoiceService.getInvoiceById(id).invoiceResponse();
+   }
+   //create invoice
+   @PostMapping(value = "/invoice", consumes = "application/json")
+   public InvoiceResponse createInvoice(@RequestBody InvoiceRequest invoiceRequest){
+       return invoiceService.createInvoice(invoiceRequest.invoiceCompose()).invoiceResponse();
+   }
+   //add invoice to user
+    @PutMapping(value = "/invoice")
+       public InvoiceResponse addInvoice(@PathVariable(value = "id") Long invoiceId, Long userId){
+           return invoiceService.addInvoiceToUser(userId, invoiceId).invoiceResponse();
     }
-    //create invoice
-    @PostMapping(value = "/invoice" , consumes = "application/json", produces = "application/json")
-    public InvoiceResponse createInvoice(InvoiceRequest invoiceRequest) {
-    User user = userService.getUserById(invoiceRequest.getUserId().getId());
-    Invoice invoice = invoiceService.createInvoice(invoiceRequest);
-            .builder()
-            .number(invoiceRequest.getNumber())
-            .total(invoiceRequest.getTotal())
-            .invoiceWithUser(invoiceRequest.getUserId())
-            .invoiceWithProducts(invoiceRequest.getInvoiceWithProducts())
-            .build();
-
+    //remove invoice from user
+    @DeleteMapping(value = "/invoice/{id}/user-delete/{id}")
+    public void removeInvoiceFromUser(@PathVariable(value = "id")  Long invoiceId, Long userId){
+        invoiceService.removeInvoiceFromUser(userId, invoiceId);
     }
-    //add invoice to user
-    //remove invoice from uder
     //add product to invoice
+    @PutMapping(value = "/product/{id}/user/{id}")
+    public InvoiceResponse addProductToUser(@PathVariable(value = "id") Long invoiceId, Long productId){
+        return invoiceService.addInvoiceToProduct(productId, invoiceId).invoiceResponse();
+    }
     //remove product from invoice
-
-
+    @DeleteMapping(value = "/invoice/{id}/product-delete/{id}")
+    public void removeProductFromUser(@PathVariable(value = "id") Long invoiceId, Long productId){
+         invoiceService.addInvoiceToProduct(productId, invoiceId);
+    }
 
 }

@@ -3,6 +3,7 @@ package com.bootcamp.store.controller.response;
 import com.bootcamp.store.model.Invoice;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -14,5 +15,5 @@ public class ProductResponse {
     private Long id;
     private String name;
     private double value;
-    private List<Invoice> productsOnInvoices;
+    private InvoiceResponse invoiceResponseList;
 }

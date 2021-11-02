@@ -1,5 +1,8 @@
 package com.bootcamp.store.model;
 
+import com.bootcamp.store.controller.response.InvoiceResponse;
+import com.bootcamp.store.controller.response.UserResponse;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,4 +27,29 @@ public class User {
     private String roles;
     @OneToMany(mappedBy = "invoiceWithUser")
     private List<Invoice> invoices = new ArrayList<>();
+
+    @JsonIgnore
+    public UserResponse userResponse(){
+        List<InvoiceResponse> invoiceResponses = new ArrayList<>();
+        if(this.invoices!=null && !this.invoices.isEmpty()){
+            for(Invoice invoice : this.invoices) {
+                invoiceResponses.add(new InvoiceResponse(
+                        invoice.getId(),
+                        invoice.getNumber(),
+                        invoice.getTotal(),
+                        invoice.getInvoiceWithUser(),
+                        invoice.invoiceResponse().getProductResponses()
+                ));
+
+            }
+        }
+        return new UserResponse(
+                this.getId(),
+                this.getUserName(),
+                this.getAge(),
+                this.getPassword(),
+                this.isActive(),
+                this.getRoles(),
+                invoiceResponses);
+    }
 }

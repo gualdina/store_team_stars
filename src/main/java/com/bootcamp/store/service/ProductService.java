@@ -1,5 +1,6 @@
 package com.bootcamp.store.service;
 
+import com.bootcamp.store.exception.InvoiceNotFound;
 import com.bootcamp.store.exception.ProductNotFound;
 import com.bootcamp.store.model.Invoice;
 import com.bootcamp.store.model.Product;
@@ -12,11 +13,11 @@ import java.util.List;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
-    private final InvoiceService invoiceService;
+    private final InvoiceRepository invoiceRepository;
 
-    public ProductService(ProductRepository productRepository, InvoiceService invoiceService) {
+    public ProductService(ProductRepository productRepository, InvoiceRepository invoiceRepository) {
         this.productRepository = productRepository;
-        this.invoiceService = invoiceService;
+        this.invoiceRepository = invoiceRepository;
     }
     //get all
     public List<Product> getAllProducts() {
@@ -26,18 +27,25 @@ public class ProductService {
     public Product getProductById(Long id) {
         return productRepository.findById(id).orElseThrow(ProductNotFound::new);
     }
-   //create product
+    //find invoice by id
+    public Invoice getInvoiceById(Long id) {
+        return invoiceRepository.findById(id).orElseThrow(InvoiceNotFound::new);
+    }
+    //create product
+    public Product createProduct(Product product){
+       return productRepository.save(product);
+   }
     //add Product to invoice
     public Product addProductToInvoice(Long invoiceId, Long productId){
         Product product = this.getProductById(productId);
-        Invoice invoice = this.invoiceService.getInvoiceById(invoiceId);
+        Invoice invoice = this.getInvoiceById(invoiceId);
         invoice.getInvoiceWithProducts().add(product);
         return product;
     }
     //remove product from invoice
     public void removeProductToInvoice(Long invoiceId, Long productId){
         Product product = getProductById(productId);
-        Invoice invoice = this.invoiceService.getInvoiceById(invoiceId);
+        Invoice invoice = this.getInvoiceById(invoiceId);
         invoice.getInvoiceWithProducts().remove(product);
     }
 }

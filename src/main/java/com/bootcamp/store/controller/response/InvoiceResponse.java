@@ -16,5 +16,5 @@ public class InvoiceResponse {
     private int number;
     private double total;
     private User userId;
-    private List<Product> invoiceWithProducts;
+    private List<ProductResponse> productResponses;
 }
