@@ -1,7 +1,8 @@
 version: '3.9'
 services:
   mysql_container:
-    image: mysql
+    hostname: mysql
+    image: 'mysql:latest'
     ports:
       - "3307:3306"
     environment:
@@ -9,4 +10,13 @@ services:
       MYSQL_PASSWORD: pass
       MYSQL_ROOT_PASSWORD: gualdina2018
       MYSQL_DATABASE: store
-
+  store:
+    image: 'store'
+    ports:
+       - "8082:8080"
+    environment:
+     SPRING_DATASOURSE_URL: jdbc:mysql://mysql:3306/store
+     SPRING_DATASOURCE_USERNAME: user
+     SPRING_DATASOURCE_PASSWORD: pass
+    depends_on:
+     - mysql
