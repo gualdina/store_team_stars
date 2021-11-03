@@ -28,11 +28,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().authenticated()
-//        .antMatchers("/api/**").hasRole("ADMIN")
-//               .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
-//                .antMatchers("/").permitAll()
-                .and().httpBasic();
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/invoices/**").hasRole("ADMIN")
+                .antMatchers("/products/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/users/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/").permitAll()
+                .and()
+                .httpBasic();
     }
 
     @Bean

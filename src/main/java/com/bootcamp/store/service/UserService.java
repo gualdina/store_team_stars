@@ -32,10 +32,13 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    //update user
-    public User updateUser(User user) {
-        User userToEdit = getUserById(user.getId());
-        return userRepository.save(userToEdit);
+    //update User
+    public User updateUser(Long id, String userName, String password, int age) {
+        User user = this.getUserById(id);
+        user.setUserName(userName);
+        user.setPassword(password);
+        user.setAge(age);
+        return userRepository.save(user);
     }
 
     @Override
@@ -43,6 +46,5 @@ public class UserService implements UserDetailsService {
         Optional<User> user = userRepository.getByUserName(userName);
         user.orElseThrow(() -> new UsernameNotFoundException("Not found: " + userName));
         return user.map(UserDetails::new).get();
-
     }
 }

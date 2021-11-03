@@ -28,7 +28,7 @@ public class CreateInvoiceRequest {
                 .builder()
                 .total(total)
                 .number(number)
-                .invoiceWithUser(user)
+                .user(user)
                 .invoiceWithProducts(products)
                 .build();
     }

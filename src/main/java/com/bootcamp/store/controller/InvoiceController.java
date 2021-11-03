@@ -7,6 +7,8 @@ import com.bootcamp.store.model.Invoice;
 import com.bootcamp.store.service.InvoiceService;
 import com.bootcamp.store.service.ProductService;
 import com.bootcamp.store.service.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,50 +27,30 @@ public class InvoiceController {
     }
     public List<InvoiceResponse> invoiceResponses(List<Invoice> invoices){
         List<InvoiceResponse> invoiceResponses = new ArrayList<>();
-        for(Invoice invoice : invoices){invoiceResponses.add(invoice.invoiceResponses()); }
+        for(Invoice invoice : invoices){
+            invoiceResponses.add(invoice.createInvoiceResponse()); }
         return invoiceResponses;
     }
    //get all invoices
+   @ApiOperation(value = "Update registration detail",
+           authorizations = { @Authorization(value="basicAuth") })
    @GetMapping("/invoices")
    @PreAuthorize("hasAnyRole('ADMIN')")
    public List<InvoiceResponse> getAllInvoices(){
        return this.invoiceResponses(invoiceService.getAllInvoices());
    }
   //find by id
+  @ApiOperation(value = "find by id",
+          authorizations = { @Authorization(value="basicAuth") })
    @GetMapping("/invoice/{id}")
-   @PreAuthorize("hasAnyRole('ADMIN')")
     public InvoiceResponse getInvoiceById(@PathVariable(value = "id") Long id){
-        return invoiceService.getInvoiceById(id).invoiceResponses();
+        return invoiceService.getInvoiceById(id).createInvoiceResponse();
    }
    //create invoice
+   @ApiOperation(value = "create invoice",
+           authorizations = { @Authorization(value="basicAuth") })
    @PostMapping(value = "/invoice", consumes = "application/json")
-   @PreAuthorize("hasAnyRole( 'ADMIN')")
    public InvoiceResponse createInvoice(@RequestBody CreateInvoiceRequest createInvoiceRequest){
-       return invoiceService.createInvoice(createInvoiceRequest.getUserId(), createInvoiceRequest.getProductIdList()).invoiceResponses();
+       return invoiceService.createInvoice(createInvoiceRequest.getUserId(), createInvoiceRequest.getProductIdList()).createInvoiceResponse();
    }
-   //add invoice to user
-    @PutMapping(value = "/invoice")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-       public InvoiceResponse addInvoice(@PathVariable(value = "id") Long invoiceId, Long userId){
-           return invoiceService.addInvoiceToUser(userId, invoiceId).invoiceResponses();
-    }
-    //remove invoice from user
-    @DeleteMapping(value = "/invoice/{id}/user-delete/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public void removeInvoiceFromUser(@PathVariable(value = "id")  Long invoiceId, Long userId){
-        invoiceService.removeInvoiceFromUser(userId, invoiceId);
-    }
-    //add product to invoice
-    @PutMapping(value = "/product/{id}/user/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public InvoiceResponse addProductToUser(@PathVariable(value = "id") Long invoiceId, Long productId){
-        return invoiceService.addInvoiceToProduct(productId, invoiceId).invoiceResponses();
-    }
-    //remove product from invoice
-    @DeleteMapping(value = "/invoice/{id}/product-delete/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public void removeProductFromUser(@PathVariable(value = "id") Long invoiceId, Long productId){
-         invoiceService.addInvoiceToProduct(productId, invoiceId);
-    }
-
 }

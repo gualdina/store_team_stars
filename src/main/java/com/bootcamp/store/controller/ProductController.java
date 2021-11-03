@@ -5,6 +5,8 @@ import com.bootcamp.store.controller.response.ProductResponse;
 import com.bootcamp.store.model.Product;
 import com.bootcamp.store.service.ProductService;
 import com.bootcamp.store.service.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,39 +34,30 @@ public class ProductController {
         return productResponses;
     }
 
-    //get all invoices
+    //get all products
+    @ApiOperation(value = "get all products",
+            authorizations = { @Authorization(value="basicAuth") })
     @GetMapping("/products")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ProductResponse> getAllProduct() {
+
         return this.productResponses(productService.getAllProducts());
     }
 
     //find by id
+    @ApiOperation(value = "find by id",
+            authorizations = { @Authorization(value="basicAuth") })
     @GetMapping("/product/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ProductResponse getProductById(@PathVariable(value = "id") Long id) {
         return productService.getProductById(id).productResponses();
     }
 
     //create product
+    @ApiOperation(value = "create product",
+            authorizations = { @Authorization(value="basicAuth") })
     @PostMapping(value = "/products", consumes = "application/json")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     public ProductResponse createProduct(@RequestBody ProductRequest productRequest) {
         return productService.createProduct(productRequest.productCompose()).productResponses();
     }
 
-    //add product to invoice
-    @PutMapping(value = "/invoice/{id}/user/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ProductResponse addProductToInvoice(@PathVariable(value = "id") Long productId, Long invoiceId) {
-        return productService.addProductToInvoice(productId, invoiceId).productResponses();
-    }
-
-    //remove product from invoice
-    @DeleteMapping(value = "/invoice-delete")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public void removeProductsFromInvoice(@PathVariable Long productId, Long invoiceId) {
-        productService.removeProductToInvoice(productId, invoiceId);
-    }
 
 }

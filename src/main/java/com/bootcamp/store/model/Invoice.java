@@ -23,8 +23,8 @@ public class Invoice {
     private int number;
     private double total;
     @ManyToOne
-    @JoinColumn(name="invoice_id")
-    private User invoiceWithUser = new User();
+    @JoinColumn(name="id_user")
+    private User user;
 
     @ManyToMany
     @JoinTable(
@@ -34,19 +34,19 @@ public class Invoice {
     private List<Product> invoiceWithProducts = new ArrayList<>();
 
     @JsonIgnore
-    public InvoiceResponse invoiceResponses() {
-            List<ProductResponse> productResponseArrayList = new ArrayList<>();
-            if(!invoiceWithProducts.isEmpty()){
-                for(Product product : invoiceWithProducts){
-                    productResponseArrayList.add(product.productResponses());
+    public InvoiceResponse createInvoiceResponse() {
+            List<ProductResponse> productResponseList = new ArrayList<>();
+        if (invoiceWithProducts != null && !invoiceWithProducts.isEmpty()) {
+            for (Product product : invoiceWithProducts){
+                    productResponseList.add(product.productResponses());
                 }
             }
             return new InvoiceResponse(
                     this.id,
                     this.number,
                     this.total,
-                    this.invoiceResponses().getUserId(),
-                    productResponseArrayList
+                    this.user.getId(),
+                    productResponseList
             );
     }
 }

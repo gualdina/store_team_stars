@@ -35,17 +35,4 @@ public class ProductService {
     public Product createProduct(Product product){
        return productRepository.save(product);
    }
-    //add Product to invoice
-    public Product addProductToInvoice(Long invoiceId, Long productId){
-        Product product = this.getProductById(productId);
-        Invoice invoice = this.getInvoiceById(invoiceId);
-        invoice.getInvoiceWithProducts().add(product);
-        return product;
-    }
-    //remove product from invoice
-    public void removeProductToInvoice(Long invoiceId, Long productId){
-        Product product = getProductById(productId);
-        Invoice invoice = this.getInvoiceById(invoiceId);
-        invoice.getInvoiceWithProducts().remove(product);
-    }
 }

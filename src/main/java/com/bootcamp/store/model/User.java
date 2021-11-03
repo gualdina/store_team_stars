@@ -33,7 +33,7 @@ public class User {
         List<InvoiceResponse> invoiceResponses = new ArrayList<>();
         if(this.invoices!=null && !this.invoices.isEmpty()){
             for(Invoice invoice : this.invoices) {
-                invoiceResponses.add(invoice.invoiceResponses());
+                invoiceResponses.add(invoice.createInvoiceResponse());
             }
         }
         return new UserResponse(
